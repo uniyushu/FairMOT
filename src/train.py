@@ -23,14 +23,15 @@ def main(opt):
     torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test
 
     print('Setting up data...')
-    Dataset = get_dataset(opt.dataset, opt.task)
-    f = open(opt.data_cfg)
+    print('opt.dataset',opt.dataset)
+    Dataset = get_dataset(opt.dataset, opt.task) #JointDataset
+    f = open(opt.data_cfg) #default='../src/lib/cfg/data.json'
     data_config = json.load(f)
-    trainset_paths = data_config['train']
-    dataset_root = data_config['root']
+    trainset_paths = data_config['train'] #"mot17":"./data/mot17.train",
+    dataset_root = data_config['root'] #"root":"/data/FairMOT/dataset/",
     f.close()
     transforms = T.Compose([T.ToTensor()])
-    dataset = Dataset(opt, dataset_root, trainset_paths, (1088, 608), augment=True, transforms=transforms)
+    dataset = Dataset(opt, dataset_root, trainset_paths, (1088, 608), augment=True, transforms=transforms) #JointDataset(opt, )
     opt = opts().update_dataset_info_and_set_heads(opt, dataset)
     print(opt)
 
@@ -40,12 +41,11 @@ def main(opt):
     opt.device = torch.device('cuda' if opt.gpus[0] >= 0 else 'cpu')
 
     print('Creating model...')
-    model = create_model(opt.arch, opt.heads, opt.head_conv)
+    model = create_model(opt.arch, opt.heads, opt.head_conv) #
     optimizer = torch.optim.Adam(model.parameters(), opt.lr)
     start_epoch = 0
 
     # Get dataloader
-
     train_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=opt.batch_size,
@@ -56,7 +56,7 @@ def main(opt):
     )
 
     print('Starting training...')
-    Trainer = train_factory[opt.task]
+    Trainer = train_factory[opt.task] #MotTrainer
     trainer = Trainer(opt, model, optimizer)
     trainer.set_device(opt.gpus, opt.chunk_sizes, opt.device)
 

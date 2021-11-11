@@ -12,7 +12,7 @@ import torchvision
 from fvcore.nn import sigmoid_focal_loss_jit
 
 from models.losses import FocalLoss, TripletLoss
-from models.losses import RegL1Loss, RegLoss, NormRegL1Loss, RegWeightedL1Loss
+from models.losses import RegL1Loss, RegLoss, NormRegL1Loss, RegWeightedL1Loss,RegL2Loss
 from models.decode import mot_decode
 from models.utils import _sigmoid, _tranpose_and_gather_feat
 from utils.post_process import ctdet_post_process
@@ -24,7 +24,7 @@ class MotLoss(torch.nn.Module):
         super(MotLoss, self).__init__()
         self.crit = torch.nn.MSELoss() if opt.mse_loss else FocalLoss()
         self.crit_reg = RegL1Loss() if opt.reg_loss == 'l1' else \
-            RegLoss() if opt.reg_loss == 'sl1' else None
+            RegLoss() if opt.reg_loss == 'sl1' else RegL2Loss()
         self.crit_wh = torch.nn.L1Loss(reduction='sum') if opt.dense_wh else \
             NormRegL1Loss() if opt.norm_wh else \
                 RegWeightedL1Loss() if opt.cat_spec_wh else self.crit_reg

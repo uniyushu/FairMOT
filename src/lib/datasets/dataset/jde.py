@@ -139,7 +139,7 @@ class LoadImagesAndLabels:  # for training
             self.img_files = list(filter(lambda x: len(x) > 0, self.img_files))
 
         self.label_files = [x.replace('images', 'labels_with_ids').replace('.png', '.txt').replace('.jpg', '.txt')
-                            for x in self.img_files]
+                           for x in self.img_files]
 
         self.nF = len(self.img_files)  # number of image files
         self.width = img_size[0]
@@ -155,9 +155,10 @@ class LoadImagesAndLabels:  # for training
     def get_data(self, img_path, label_path):
         height = self.height
         width = self.width
-        img = cv2.imread(img_path)  # BGR
+        img = cv2.imread(img_path.replace('images',''))  # BGR
         if img is None:
             raise ValueError('File corrupt {}'.format(img_path))
+        #/data/FairMOT/dataset/MOT20/images/train/MOT20-02/img1/002675.jpg
         augment_hsv = True
         if self.augment and augment_hsv:
             # SV augmentation by 50%
@@ -310,10 +311,10 @@ def random_affine(img, targets=None, degrees=(-10, 10), translate=(.1, .1), scal
             xy = np.concatenate((x - w / 2, y - h / 2, x + w / 2, y + h / 2)).reshape(4, n).T
 
             # reject warped points outside of image
-            #np.clip(xy[:, 0], 0, width, out=xy[:, 0])
-            #np.clip(xy[:, 2], 0, width, out=xy[:, 2])
-            #np.clip(xy[:, 1], 0, height, out=xy[:, 1])
-            #np.clip(xy[:, 3], 0, height, out=xy[:, 3])
+            np.clip(xy[:, 0], 0, width, out=xy[:, 0])
+            np.clip(xy[:, 2], 0, width, out=xy[:, 2])
+            np.clip(xy[:, 1], 0, height, out=xy[:, 1])
+            np.clip(xy[:, 3], 0, height, out=xy[:, 3])
             w = xy[:, 2] - xy[:, 0]
             h = xy[:, 3] - xy[:, 1]
             area = w * h
@@ -355,7 +356,7 @@ class JointDataset(LoadImagesAndLabels):  # for training
     mean = None
     std = None
     num_classes = 1
-
+    #dataset = Dataset(opt, dataset_root, trainset_paths, (1088, 608), augment=True, transforms=transforms)
     def __init__(self, opt, root, paths, img_size=(1088, 608), augment=False, transforms=None):
         self.opt = opt
         dataset_names = paths.keys()
@@ -370,11 +371,11 @@ class JointDataset(LoadImagesAndLabels):  # for training
                 self.img_files[ds] = file.readlines()
                 self.img_files[ds] = [osp.join(root, x.strip()) for x in self.img_files[ds]]
                 self.img_files[ds] = list(filter(lambda x: len(x) > 0, self.img_files[ds]))
-
+            #/data/FairMOT/dataset/MOT17/labels_with_ids/train/MOT17-02-SDP/img1/000001.txt 
             self.label_files[ds] = [
                 x.replace('images', 'labels_with_ids').replace('.png', '.txt').replace('.jpg', '.txt')
                 for x in self.img_files[ds]]
-
+            
         for ds, label_paths in self.label_files.items():
             max_index = -1
             for lp in label_paths:

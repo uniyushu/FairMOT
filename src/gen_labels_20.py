@@ -8,8 +8,8 @@ def mkdirs(d):
         os.makedirs(d)
 
 
-seq_root = '/data/yfzhang/MOT/JDE/MOT20/images/train'
-label_root = '/data/yfzhang/MOT/JDE/MOT20/labels_with_ids/train'
+seq_root = '/data/FairMOT/dataset/MOT20/train'
+label_root = '/data/FairMOT/dataset/MOT20/labels_with_ids/train'
 mkdirs(label_root)
 seqs = [s for s in os.listdir(seq_root)]
 
@@ -39,5 +39,6 @@ for seq in seqs:
         label_fpath = osp.join(seq_label_root, '{:06d}.txt'.format(fid))
         label_str = '0 {:d} {:.6f} {:.6f} {:.6f} {:.6f}\n'.format(
             tid_curr, x / seq_width, y / seq_height, w / seq_width, h / seq_height)
+        print(tid_curr)
         with open(label_fpath, 'a') as f:
             f.write(label_str)

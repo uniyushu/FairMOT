@@ -3,6 +3,7 @@ import os
 import cv2
 import json
 import numpy as np
+from tqdm import tqdm
 
 
 def mkdirs(d):
@@ -24,8 +25,8 @@ def gen_labels_crowd(data_root, label_root, ann_root):
     anns_data = load_func(ann_root)
 
     tid_curr = 0
-    for i, ann_data in enumerate(anns_data):
-        print(i)
+    for i, ann_data in tqdm(enumerate(anns_data)):
+        # print(i)
         image_name = '{}.jpg'.format(ann_data['ID'])
         img_path = os.path.join(data_root, image_name)
         anns = ann_data['gtboxes']
@@ -51,12 +52,12 @@ def gen_labels_crowd(data_root, label_root, ann_root):
 
 
 if __name__ == '__main__':
-    data_val = '/home/zyf/dataset/crowdhuman/images/val'
-    label_val = '/home/zyf/dataset/crowdhuman/labels_with_ids/val'
-    ann_val = '/home/zyf/dataset/crowdhuman/annotation_val.odgt'
-    data_train = '/home/zyf/dataset/crowdhuman/images/train'
-    label_train = '/home/zyf/dataset/crowdhuman/labels_with_ids/train'
-    ann_train = '/home/zyf/dataset/crowdhuman/annotation_train.odgt'
+    data_val = '/data/FairMOT/dataset/Images/'
+    label_val = '/data/FairMOT/dataset/crowdhuman/labels_with_ids/val'
+    ann_val = '/data/FairMOT/dataset/crowdhuman/annotation_val.odgt'
+    data_train = '/data/FairMOT/dataset/Images/'
+    label_train = '/data/FairMOT/dataset/crowdhuman/labels_with_ids/train'
+    ann_train = '/data/FairMOT/dataset/crowdhuman/annotation_train.odgt'
     gen_labels_crowd(data_train, label_train, ann_train)
     gen_labels_crowd(data_val, label_val, ann_val)
 
